@@ -172,12 +172,12 @@ class Book {
 
 	/** Validate req.body with jsonSchema */
 
-	static async validate(json) {
+	static validate(json) {
 		const result = jsonschema.validate(json, bookSchema);
 		if (!result.valid) {
-			const listOfErrors = result.errors.map((error) => error.stack);
-			throw new ExpressError(listOfErrors, 400);
+			return result.errors.map((error) => error.stack);
 		}
+		return false;
 	}
 }
 
