@@ -136,4 +136,33 @@ describe("PATCH /books", () => {
 			.send(data);
 		expect(res.statusCode).toBe(400);
 	});
+
+	test("Can't update a book if isbn not found.", async () => {
+		const data = {
+			isbn: testBook.isbn,
+			amazon_url:
+				"https://www.amazon.com/Maths-Back-Envelope-calculate-anything-ebook/dp/B07Q1YY1C5/ref=sr_1_1?crid=2JYBYVQ3KRIC4&keywords=back+of+the+envelope&qid=1653707405&s=books&sprefix=back+of+the+envelope%2Cstripbooks%2C165&sr=1-1",
+			author: "Rob Eastway",
+			language: "english",
+			pages: 208,
+			publisher: "Harper Collins",
+			title: "Maths on the Back of an Envelope: Clever ways to (roughly) calculate anything",
+			year: 2019,
+		};
+		const res = await request(app).put(`/books/badBook`).send(data);
+		expect(res.statusCode).toBe(404);
+	});
+});
+
+describe("DELETE /books", () => {
+	test("Should delete a book by isbn.", async () => {
+		const res = await request(app).delete(`/books/${testBook.isbn}`);
+		expect(res.statusCode).toBe(200);
+		expect(res.body).toEqual({ message: "Book deleted" });
+	});
+
+	test("Should give 404 statusCode if book not found.", async () => {
+		const res = await request(app).delete(`/books/badBook`);
+		expect(res.statusCode).toBe(404);
+	});
 });
