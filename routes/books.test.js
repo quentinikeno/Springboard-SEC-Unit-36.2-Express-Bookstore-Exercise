@@ -74,4 +74,66 @@ describe("POST /books", () => {
 			.send({ isbn: "0008324581" });
 		expect(res.statusCode).toBe(400);
 	});
+
+	test("Can't create a new book if there is a negative number of pages.", async () => {
+		data = {
+			isbn: "0008324581",
+			amazon_url:
+				"https://www.amazon.com/Maths-Back-Envelope-calculate-anything-ebook/dp/B07Q1YY1C5/ref=sr_1_1?crid=2JYBYVQ3KRIC4&keywords=back+of+the+envelope&qid=1653707405&s=books&sprefix=back+of+the+envelope%2Cstripbooks%2C165&sr=1-1",
+			author: "Rob Eastway",
+			language: "english",
+			pages: -1,
+			publisher: "Harper Collins",
+			title: "Maths on the Back of an Envelope: Clever ways to (roughly) calculate anything",
+			year: 2080,
+		};
+		const res = await request(app).post("/books").send(data);
+		expect(res.statusCode).toBe(400);
+	});
+});
+
+describe("PATCH /books", () => {
+	test("Update a book.", async () => {
+		data = {
+			isbn: testBook.isbn,
+			amazon_url:
+				"https://www.amazon.com/Maths-Back-Envelope-calculate-anything-ebook/dp/B07Q1YY1C5/ref=sr_1_1?crid=2JYBYVQ3KRIC4&keywords=back+of+the+envelope&qid=1653707405&s=books&sprefix=back+of+the+envelope%2Cstripbooks%2C165&sr=1-1",
+			author: "Rob Eastway",
+			language: "english",
+			pages: 208,
+			publisher: "Harper Collins",
+			title: "Maths on the Back of an Envelope: Clever ways to (roughly) calculate anything",
+			year: 2019,
+		};
+		const res = await request(app)
+			.put(`/books/${testBook.isbn}`)
+			.send(data);
+		expect(res.statusCode).toBe(200);
+		expect(res.body).toEqual({ book: data });
+	});
+
+	test("Can't update a book if required data missing in req.body.", async () => {
+		const res = await request(app)
+			.put(`/books/${testBook.isbn}`)
+			.send({ isbn: "0008324581" });
+		expect(res.statusCode).toBe(400);
+	});
+
+	test("Can't update a book if there is a negative number of pages.", async () => {
+		data = {
+			isbn: "0008324581",
+			amazon_url:
+				"https://www.amazon.com/Maths-Back-Envelope-calculate-anything-ebook/dp/B07Q1YY1C5/ref=sr_1_1?crid=2JYBYVQ3KRIC4&keywords=back+of+the+envelope&qid=1653707405&s=books&sprefix=back+of+the+envelope%2Cstripbooks%2C165&sr=1-1",
+			author: "Rob Eastway",
+			language: "english",
+			pages: -1,
+			publisher: "Harper Collins",
+			title: "Maths on the Back of an Envelope: Clever ways to (roughly) calculate anything",
+			year: 2080,
+		};
+		const res = await request(app)
+			.put(`/books/${testBook.isbn}`)
+			.send(data);
+		expect(res.statusCode).toBe(400);
+	});
 });
